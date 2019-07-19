@@ -10,7 +10,7 @@ class Sudoku9 {
 public:
    typedef std::array<std::array<int, 9>, 9> Table;
 
-   Sudoku9();
+   explicit Sudoku9(bool deterministic = false);
 
    const Table &solution() const { return _solution; }
 
@@ -29,10 +29,14 @@ private:
 
    bool try_to_fill_solution_entry_in_solution(int idx, const std::array<std::array<int, 9>, 81> &random_orders);
 
+   // return true if there are no conflicts with table[idx/9][idx%9]
    bool is_legal_solution_point(int idx, const Table &table) const;
+
+   bool has_legal_extension(int idx, Table &table) const;
 
    Table _solution;
    Table _puzzle;
+   bool _is_deterministic;  // if true, you will never need to guess (these are easier puzzles)
 };
 
 

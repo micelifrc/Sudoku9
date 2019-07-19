@@ -32,13 +32,33 @@ int Rand::create_random_number(int upper_limit) {
    return create_random_number(0, upper_limit);
 }
 
-void Rand::write_random_array(std::array<int, 9> &random_array) {
-   std::vector<int> residual_vec{1, 2, 3, 4, 5, 6, 7, 8, 9};
-   int random_number = create_random_number(9*8*7*6*5*4*3*2*1);
-   for (unsigned int iter = 9; iter != 0; --iter) {
-      std::swap(residual_vec[random_number % iter], residual_vec.back());
-      random_array[9 - iter] = residual_vec.back();
-      residual_vec.pop_back();
-      random_number /= iter;
+std::vector<int> Rand::create_shuffled_vector(int lower_limit, int upper_limit) {
+   int length = upper_limit - lower_limit;
+   if(length <= 0) {
+      throw std::logic_error("Cannot create shuffled vercot of negative length");
+   }
+
+   std::vector<int> shuffled_vector;
+   shuffled_vector.reserve(length);
+   for(unsigned int entry = lower_limit; entry != upper_limit; ++entry) {
+      shuffled_vector.emplace_back(entry);
+   }
+
+   //shuffle
+   int rand = 0;
+   for(unsigned int pos = 1; pos <= length; ++pos) {
+      std::swap(shuffled_vector[create_random_number(pos + 1)], shuffled_vector[pos]);
+   }
+   return shuffled_vector;
+}
+
+std::vector<int> Rand::create_shuffled_vector(int upper_limit) {
+   return create_shuffled_vector(0, upper_limit);
+}
+
+void Rand::override_random_array(std::array<int, 9> &random_array) {
+   std::vector<int> shuffled_vector = create_shuffled_vector(1, 10);
+   for(int idx = 0; idx != 9; ++idx) {
+      random_array[idx] = shuffled_vector[idx];
    }
 }
