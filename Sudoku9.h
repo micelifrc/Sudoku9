@@ -8,8 +8,8 @@
 // Currently all task are deterministic (i.e. will never require to guess)
 class Sudoku9 {
 public:
-   static constexpr unsigned int SIZE = Rand::SIZE;
-   static constexpr unsigned int NUM_LEVELS = 4;
+   static constexpr int SIZE = Rand::SIZE;
+   static constexpr int NUM_LEVELS = 4;
    typedef std::array<std::array<int, SIZE>, SIZE> Table;
 
    explicit Sudoku9(unsigned int level_ = 0);

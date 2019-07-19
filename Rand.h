@@ -5,7 +5,7 @@
 #include <array>
 
 namespace Rand {
-   const unsigned int SIZE = 9;
+   const int SIZE = 9;
 
    void initialize_seed();
 

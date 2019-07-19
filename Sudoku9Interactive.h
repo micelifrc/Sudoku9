@@ -6,7 +6,7 @@
 
 class Sudoku9Interactive {
 public:
-   static constexpr unsigned int SIZE = Sudoku9::SIZE;
+   static constexpr int SIZE = Sudoku9::SIZE;
    typedef Sudoku9::Table Table;
 
    explicit Sudoku9Interactive();
@@ -21,7 +21,7 @@ private:
    bool play_single_game();
 
    enum Compass : int {
-      North = -9, East = 1, South = 9, West = -1
+      North = -SIZE, East = 1, South = SIZE, West = -1
    };
 
    void create_sudoku_map();
