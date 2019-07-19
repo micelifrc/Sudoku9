@@ -9,13 +9,14 @@ public:
    static constexpr unsigned int SIZE = Sudoku9::SIZE;
    typedef Sudoku9::Table Table;
 
-   explicit Sudoku9Interactive(bool deterministic = false);
+   explicit Sudoku9Interactive();
 
    ~Sudoku9Interactive();
 
    bool play();
 
 private:
+   bool initial_log();
 
    bool play_single_game();
 

@@ -6,8 +6,8 @@
 
 int Sudoku9Interactive::start_pos_x = 0, Sudoku9Interactive::start_pos_y = 0;
 
-Sudoku9Interactive::Sudoku9Interactive(bool deterministic) :
-      _deterministic{deterministic}, _position{(SIZE * SIZE) / 2}, _solution(), _grid() {
+Sudoku9Interactive::Sudoku9Interactive() :
+      _deterministic{false}, _position{(SIZE * SIZE) / 2}, _solution(), _grid() {
    initscr();
    start_colors();
    keypad(stdscr, true);
@@ -17,6 +17,9 @@ Sudoku9Interactive::Sudoku9Interactive(bool deterministic) :
    getmaxyx(stdscr, start_pos_y, start_pos_x);
    start_pos_y = (start_pos_y - 3 * SIZE) / 2;
    start_pos_x = (start_pos_x - 5 * SIZE) / 2;
+   if (initial_log()) {
+      play();
+   }
 }
 
 Sudoku9Interactive::~Sudoku9Interactive() {
@@ -32,6 +35,37 @@ bool Sudoku9Interactive::play() {
       create_sudoku_map(_deterministic);
       _position = (SIZE * SIZE) / 2;
       keep_playing = play_single_game();
+   }
+}
+
+bool Sudoku9Interactive::initial_log() {
+   clear();
+   mvprintw(start_pos_y, start_pos_x, "Press 'q' to quit the game");
+   mvprintw(start_pos_y + 3, start_pos_x, "Press 'e' to start an easy game");
+   mvprintw(start_pos_y + 6, start_pos_x, "Press 'h' to start an hard game");
+   refresh();
+   int command;
+   while (true) {
+      command = getch();
+      switch (command) {
+         case 'q':
+         case 'Q' : {
+            return false;
+         }
+         case 'e':
+         case 'E': {
+            _deterministic = true;
+            return true;
+         }
+         case 'h':
+         case 'H': {
+            _deterministic = false;
+            return true;
+         }
+         default: {
+            break;
+         }
+      }
    }
 }
 
@@ -238,8 +272,9 @@ void Sudoku9Interactive::print_entry(unsigned int idx) const {
    if ((x / 3) % 2 == (y / 3) % 2) {
       ++color;
    }
-   attron(COLOR_PAIR(color)); attron(A_BOLD);
-   if(idx == _position) attron(A_REVERSE);
+   attron(COLOR_PAIR(color));
+   attron(A_BOLD);
+   if (idx == _position) attron(A_REVERSE);
    mvprintw(3 * y + start_pos_y, 5 * x + start_pos_x, "     ");
    if (grid_entry.status == Empty) {
       mvprintw(3 * y + 1 + start_pos_y, 5 * x + start_pos_x, "     ");
@@ -247,8 +282,9 @@ void Sudoku9Interactive::print_entry(unsigned int idx) const {
       mvprintw(3 * y + 1 + start_pos_y, 5 * x + start_pos_x, ("  " + std::to_string(grid_entry.number) + "  ").c_str());
    }
    mvprintw(3 * y + 2 + start_pos_y, 5 * x + start_pos_x, "     ");
-   if(idx == _position) attroff(A_REVERSE);
-   attroff(COLOR_PAIR(color)); attroff(A_BOLD);
+   if (idx == _position) attroff(A_REVERSE);
+   attroff(COLOR_PAIR(color));
+   attroff(A_BOLD);
 }
 
 void Sudoku9Interactive::check_legality() {
