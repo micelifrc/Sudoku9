@@ -59,12 +59,25 @@ void Sudoku9::filter_out_redundant_points() {
          }
          residual_to_test = _task;
          residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
+         if (is_legal_solution_point(idx, residual_to_test)) {
+            break;
+         }
+      }
+      if(value_cand == 0) {
+         _task[idx / SIZE][idx % SIZE] = 0;
+         continue;
+      }
+      for (value_cand = SIZE; value_cand != 0; --value_cand) {
+         if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
+            continue;
+         }
+         residual_to_test = _task;
+         residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
          if (is_legal_solution_point(idx, residual_to_test) and has_legal_extension(0, residual_to_test)) {
             break;
          }
       }
-      _task[idx / SIZE][idx % SIZE] =
-            value_cand == 0 and Rand::create_random_number(NUM_LEVELS) <= _level ? 0 : _solution[idx / SIZE][idx % SIZE];
+      _task[idx / SIZE][idx % SIZE] = value_cand == 0 and Rand::create_random_number(1, NUM_LEVELS) <= _level ? 0 : _solution[idx / SIZE][idx % SIZE];
    }
 }
 
