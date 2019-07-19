@@ -1,19 +1,24 @@
 #include <iostream>
-#include "Sudoku9.h"
+#include "Sudoku9Interactive.h"
 
 int main() {
    Rand::initialize_seed();
-
-   // the following is only to show that Sudoku9 works correctly
-   Sudoku9 sudoku_non_det(false);
-   Sudoku9::print_table(sudoku_non_det.solution());
-   std::cout << std::endl;
-   Sudoku9::print_table(sudoku_non_det.puzzle());
-   std::cout << std::endl << "-------------------\n" << std::endl;
-
-   Sudoku9 sudoku_det(true);
-   Sudoku9::print_table(sudoku_det.solution());
-   std::cout << std::endl;
-   Sudoku9::print_table(sudoku_det.puzzle());
+   std::cout << "This program will allow to play some sudoku puzzles." << std::endl
+             << "In any moment you can press 'q' to quit the program." << std::endl
+             << "Type 'e' to start a new easy game." << std::endl
+             << "Type 'h' to start a new hard game." << std::endl;
+   char c = ' ';
+   while (true) {
+      c = getchar();
+      if (c == 'q') {
+         std::cout << "Thank you for playing with us :)" << std::endl;
+         return 0;
+      }
+      if (c == 'e' or c == 'h') {
+         Sudoku9Interactive sudoku_game(c == 'e');
+         sudoku_game.play();
+         return 0;
+      }
+   }
    return 0;
 }

@@ -5,6 +5,8 @@
 #include <array>
 
 namespace Rand {
+   const unsigned int SIZE = 9;
+
    void initialize_seed();
 
    // creates random int in [lower_limit, upper_limit)
@@ -20,7 +22,7 @@ namespace Rand {
    std::vector<int> create_shuffled_vector(int upper_limit);
 
    // override @p random_array with entries in [1,9] all different, in random order
-   void override_random_array(std::array<int, 9> &random_array);
+   void override_random_array(std::array<int, SIZE> &random_array);
 };
 
 

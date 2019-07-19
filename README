@@ -1,1 +1,2 @@
 The program will allow to play a game of Sudoku on 9x9 grids.
+To compile, please use the Makefile
