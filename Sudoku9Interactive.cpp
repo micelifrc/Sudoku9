@@ -7,7 +7,7 @@
 int Sudoku9Interactive::start_pos_x = 0, Sudoku9Interactive::start_pos_y = 0;
 
 Sudoku9Interactive::Sudoku9Interactive() :
-      _deterministic{false}, _position{(SIZE * SIZE) / 2}, _solution(), _grid() {
+      _level{0}, _position{(SIZE * SIZE) / 2}, _solution(), _grid() {
    initscr();
    start_colors();
    keypad(stdscr, true);
@@ -32,7 +32,7 @@ Sudoku9Interactive::~Sudoku9Interactive() {
 bool Sudoku9Interactive::play() {
    bool keep_playing = true;
    while (keep_playing) {
-      create_sudoku_map(_deterministic);
+      create_sudoku_map();
       _position = (SIZE * SIZE) / 2;
       keep_playing = play_single_game();
    }
@@ -41,8 +41,10 @@ bool Sudoku9Interactive::play() {
 bool Sudoku9Interactive::initial_log() {
    clear();
    mvprintw(start_pos_y, start_pos_x, "Press 'q' to quit the game");
-   mvprintw(start_pos_y + 3, start_pos_x, "Press 'e' to start an easy game");
+   mvprintw(start_pos_y + 2, start_pos_x, "Press 'e' to start an easy game");
+   mvprintw(start_pos_y + 4, start_pos_x, "Press 'i' to start an intermediate game");
    mvprintw(start_pos_y + 6, start_pos_x, "Press 'h' to start an hard game");
+   mvprintw(start_pos_y + 8, start_pos_x, "Press 'n' to start a nightmare game");
    refresh();
    int command;
    while (true) {
@@ -54,12 +56,22 @@ bool Sudoku9Interactive::initial_log() {
          }
          case 'e':
          case 'E': {
-            _deterministic = true;
+            _level = 0;
+            return true;
+         }
+         case 'i':
+         case 'I': {
+            _level = 1;
             return true;
          }
          case 'h':
          case 'H': {
-            _deterministic = false;
+            _level = 2;
+            return true;
+         }
+         case 'n':
+         case 'N': {
+            _level = 3;
             return true;
          }
          default: {
@@ -119,12 +131,22 @@ bool Sudoku9Interactive::play_single_game() {
          }
          case 'e':
          case 'E': {
-            _deterministic = true;
+            _level = 0;
+            return true;
+         }
+         case 'i':
+         case 'I': {
+            _level = 1;
             return true;
          }
          case 'h':
          case 'H': {
-            _deterministic = false;
+            _level = 2;
+            return true;
+         }
+         case 'n':
+         case 'N': {
+            _level = 3;
             return true;
          }
          case 'q':
@@ -138,8 +160,8 @@ bool Sudoku9Interactive::play_single_game() {
    }
 }
 
-void Sudoku9Interactive::create_sudoku_map(bool deterministic) {
-   Sudoku9 sudoku9(deterministic);
+void Sudoku9Interactive::create_sudoku_map() {
+   Sudoku9 sudoku9(_level);
    _solution = sudoku9.solution();
    const Table &task = sudoku9.task();
    for (unsigned int row_idx = 0; row_idx != SIZE; ++row_idx) {
@@ -256,7 +278,9 @@ void Sudoku9Interactive::print_all() const {
    mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'q' to quit the game");
    mvprintw(3 * SIZE + start_pos_y + 3, start_pos_x, "Press 'c' to clear the grid");
    mvprintw(3 * SIZE + start_pos_y + 4, start_pos_x, "Press 'e' to start a new easy game");
-   mvprintw(3 * SIZE + start_pos_y + 5, start_pos_x, "Press 'h' to start a new hard game");
+   mvprintw(3 * SIZE + start_pos_y + 5, start_pos_x, "Press 'i' to start a new intermediate game");
+   mvprintw(3 * SIZE + start_pos_y + 6, start_pos_x, "Press 'h' to start a new hard game");
+   mvprintw(3 * SIZE + start_pos_y + 7, start_pos_x, "Press 'n' to start a new nightmare game");
    refresh();
 }
 

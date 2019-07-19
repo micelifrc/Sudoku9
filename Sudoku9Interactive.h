@@ -24,7 +24,7 @@ private:
       North = -9, East = 1, South = 9, West = -1
    };
 
-   void create_sudoku_map(bool deterministic);
+   void create_sudoku_map();
 
    bool try_move(Compass direction);
 
@@ -66,7 +66,7 @@ private:
 
    static int start_pos_x, start_pos_y;
 
-   bool _deterministic;
+   unsigned int _level;
    int _position;
    Table _solution;
    std::array<std::array<GridEntry, 9>, 9> _grid;

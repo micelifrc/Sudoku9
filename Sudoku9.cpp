@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Sudoku9.h"
 
-Sudoku9::Sudoku9(bool deterministic) : _is_deterministic{deterministic} {
+Sudoku9::Sudoku9(unsigned int level_) : _level{level_} {
    create_solution();
    filter_out_redundant_points();
 }
@@ -38,7 +38,7 @@ void Sudoku9::initiaze_table_to_constant(Table &table, int constant) {
 
 void Sudoku9::create_solution() {
    initiaze_table_to_constant(_solution, 0);
-   std::array<std::array<int, SIZE>, SIZE * SIZE> order;
+   std::array < std::array < int, SIZE >, SIZE * SIZE > order;
    for (auto &entry: order) {
       Rand::override_random_array(entry);
    }
@@ -49,52 +49,22 @@ void Sudoku9::create_solution() {
 // it could be better to design a more complex version of filter_out_redundant_points to create more complex puzzles
 void Sudoku9::filter_out_redundant_points() {
    _task = _solution;
-   if (_is_deterministic) {
-      std::vector<int> indices_left;
-      indices_left.reserve(SIZE * SIZE);
-      for (unsigned int idx = 0; idx != SIZE * SIZE; ++idx) {
-         indices_left.emplace_back(idx);
-      }
-      int idx;
-      for (unsigned int iter = 0; iter != 100000; ++iter) {
-         unsigned int vector_idx = Rand::create_random_number(indices_left.size());
-         idx = indices_left[vector_idx];
-         unsigned int value_cand;
-         for (value_cand = SIZE; value_cand != 0; --value_cand) {
-            if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
-               continue;
-            }
-            _task[idx / SIZE][idx % SIZE] = value_cand;
-            if (is_legal_solution_point(idx, _task)) {
-               break;
-            }
+   Table residual_to_test = _task;
+   std::vector<int> shuffled_indices = Rand::create_shuffled_vector(SIZE * SIZE);
+   for (int idx: shuffled_indices) {
+      unsigned int value_cand;
+      for (value_cand = SIZE; value_cand != 0; --value_cand) {
+         if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
+            continue;
          }
-         if (value_cand == 0) {
-            // _task[idx/SIZE][idx%SIZE] doesn't have any other legal solution
-            _task[idx / SIZE][idx % SIZE] = 0;
-            std::swap(indices_left[vector_idx], indices_left.back());
-            indices_left.pop_back();
-         } else {
-            _task[idx / SIZE][idx % SIZE] = _solution[idx / SIZE][idx % SIZE];
+         residual_to_test = _task;
+         residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
+         if (is_legal_solution_point(idx, residual_to_test) and has_legal_extension(0, residual_to_test)) {
+            break;
          }
       }
-   } else {
-      Table residual_to_test = _task;
-      std::vector<int> shuffled_indices = Rand::create_shuffled_vector(SIZE * SIZE);
-      for (int idx: shuffled_indices) {
-         unsigned int value_cand;
-         for (value_cand = SIZE; value_cand != 0; --value_cand) {
-            if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
-               continue;
-            }
-            residual_to_test = _task;
-            residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
-            if (is_legal_solution_point(idx, residual_to_test) and has_legal_extension(0, residual_to_test)) {
-               break;
-            }
-         }
-         _task[idx / SIZE][idx % SIZE] = value_cand == 0 ? 0 : _solution[idx / SIZE][idx % SIZE];
-      }
+      _task[idx / SIZE][idx % SIZE] =
+            value_cand == 0 and Rand::create_random_number(NUM_LEVELS) <= _level ? 0 : _solution[idx / SIZE][idx % SIZE];
    }
 }
 

@@ -9,9 +9,10 @@
 class Sudoku9 {
 public:
    static constexpr unsigned int SIZE = Rand::SIZE;
+   static constexpr unsigned int NUM_LEVELS = 4;
    typedef std::array<std::array<int, SIZE>, SIZE> Table;
 
-   explicit Sudoku9(bool deterministic = false);
+   explicit Sudoku9(unsigned int level_ = 0);
 
    const Table &solution() const { return _solution; }
 
@@ -38,7 +39,7 @@ private:
 
    Table _solution;
    Table _task;
-   bool _is_deterministic;  // if true, you will never need to guess (these are easier puzzles)
+   unsigned int _level;  // from 0 (easy) to NUM_LEVELS-1 (nightmare)
 };
 
 
