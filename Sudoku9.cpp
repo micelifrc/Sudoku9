@@ -28,7 +28,7 @@ void Sudoku9::print_table(const Table &table) {
    std::cout << hline;
 }
 
-void Sudoku9::initiaze_table_to_constant(Table &table, int constant) {
+void Sudoku9::initialize_table_to_constant(Table &table, int constant) {
    for (auto &row: table) {
       for (auto &entry: row) {
          entry = constant;
@@ -37,12 +37,12 @@ void Sudoku9::initiaze_table_to_constant(Table &table, int constant) {
 }
 
 void Sudoku9::create_solution() {
-   initiaze_table_to_constant(_solution, 0);
+   initialize_table_to_constant(_solution, 0);
    std::array < std::array < int, SIZE >, SIZE * SIZE > order;
    for (auto &entry: order) {
       Rand::override_random_array(entry);
    }
-   try_to_fill_solution_entry_in_solution(0, order);
+   try_to_fill_solution_entry_in_solution_table(0, order);
 }
 
 // using this version of filter_out_redundant_points we will never need to guess!
@@ -82,14 +82,15 @@ void Sudoku9::filter_out_redundant_points() {
 }
 
 
-bool Sudoku9::try_to_fill_solution_entry_in_solution(int idx, const std::array<std::array<int, SIZE>,
+bool Sudoku9::try_to_fill_solution_entry_in_solution_table(int idx, const std::array<std::array<int, SIZE>,
       SIZE * SIZE> &random_orders) {
    if (idx == SIZE * SIZE) {
       return true;
    }
    for (int random_try: random_orders[idx]) {
       _solution[idx / SIZE][idx % SIZE] = random_try;
-      if (is_legal_solution_point(idx, _solution) and try_to_fill_solution_entry_in_solution(idx + 1, random_orders)) {
+      if (is_legal_solution_point(idx, _solution) and
+         try_to_fill_solution_entry_in_solution_table(idx + 1, random_orders)) {
          return true;
       }
    }

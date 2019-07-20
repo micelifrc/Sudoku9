@@ -20,7 +20,7 @@ public:
 
    static void print_table(const Table &table);
 
-   static void initiaze_table_to_constant(Table &table, int constant);
+   static void initialize_table_to_constant(Table &table, int constant);
 
 private:
    void create_solution();
@@ -30,7 +30,7 @@ private:
    void filter_out_redundant_points();
 
    bool
-   try_to_fill_solution_entry_in_solution(int idx, const std::array<std::array<int, SIZE>, SIZE * SIZE> &random_orders);
+   try_to_fill_solution_entry_in_solution_table(int idx, const std::array<std::array<int, SIZE>, SIZE * SIZE> &random_orders);
 
    // return true if there are no conflicts with table[idx/9][idx%9]
    bool is_legal_solution_point(int idx, const Table &table) const;

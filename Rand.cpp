@@ -46,7 +46,7 @@ std::vector<int> Rand::create_shuffled_vector(int lower_limit, int upper_limit) 
 
    //shuffle
    int rand = 0;
-   for (unsigned int pos = 1; pos <= length; ++pos) {
+   for (unsigned int pos = 1; pos < length; ++pos) {
       std::swap(shuffled_vector[create_random_number(pos + 1)], shuffled_vector[pos]);
    }
    return shuffled_vector;
@@ -57,8 +57,8 @@ std::vector<int> Rand::create_shuffled_vector(int upper_limit) {
 }
 
 void Rand::override_random_array(std::array<int, SIZE> &random_array) {
-   std::vector<int> shuffled_vector = create_shuffled_vector(1, 10);
-   for (int idx = 0; idx != 9; ++idx) {
+   std::vector<int> shuffled_vector = create_shuffled_vector(1, SIZE + 1);
+   for (int idx = 0; idx != SIZE; ++idx) {
       random_array[idx] = shuffled_vector[idx];
    }
 }
