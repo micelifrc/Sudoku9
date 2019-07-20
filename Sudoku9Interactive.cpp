@@ -287,18 +287,18 @@ void Sudoku9Interactive::print_all() const {
 void Sudoku9Interactive::print_entry(unsigned int idx) const {
    unsigned int y = idx / SIZE, x = idx % SIZE;
    const GridEntry &grid_entry = _grid[y][x];
-   unsigned int color = 3;
-   if (grid_entry.status == Fixed) {
-      color = 1;
+   int bg_color = 0, fg_color = 0;
+   if (idx != _position) {
+      bg_color = (y / 3) % 2 == (x / 3) % 2 ? 1 : 2;
+   }
+   if (grid_entry.status == Legal) {
+      fg_color = 1;
    } else if (grid_entry.status == Illegal) {
-      color = 5;
+      fg_color = 2;
    }
-   if ((x / 3) % 2 == (y / 3) % 2) {
-      ++color;
-   }
+   int color = 3 * bg_color + fg_color + 1;
    attron(COLOR_PAIR(color));
    attron(A_BOLD);
-   if (idx == _position) attron(A_REVERSE);
    mvprintw(3 * y + start_pos_y, 5 * x + start_pos_x, "     ");
    if (grid_entry.status == Empty) {
       mvprintw(3 * y + 1 + start_pos_y, 5 * x + start_pos_x, "     ");
@@ -306,7 +306,6 @@ void Sudoku9Interactive::print_entry(unsigned int idx) const {
       mvprintw(3 * y + 1 + start_pos_y, 5 * x + start_pos_x, ("  " + std::to_string(grid_entry.number) + "  ").c_str());
    }
    mvprintw(3 * y + 2 + start_pos_y, 5 * x + start_pos_x, "     ");
-   if (idx == _position) attroff(A_REVERSE);
    attroff(COLOR_PAIR(color));
    attroff(A_BOLD);
 }
@@ -362,11 +361,14 @@ void Sudoku9Interactive::start_colors() {
 #ifndef INITIALIZE_CHARACTER_MAP
 #define INITIALIZE_CHARACTER_MAP
    start_color();
-   init_pair(BLACK_WHITE, COLOR_BLACK, COLOR_WHITE);
-   init_pair(BLACK_YELLOW, COLOR_BLACK, COLOR_YELLOW);
-   init_pair(BLUE_WHITE, COLOR_BLUE, COLOR_WHITE);
-   init_pair(BLUE_YELLOW, COLOR_BLUE, COLOR_YELLOW);
-   init_pair(RED_WHITE, COLOR_RED, COLOR_WHITE);
-   init_pair(RED_YELLOW, COLOR_RED, COLOR_YELLOW);
+   init_pair(WHITE_BLACK, COLOR_WHITE, COLOR_BLACK);
+   init_pair(YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
+   init_pair(RED_BLACK, COLOR_RED, COLOR_BLACK);
+   init_pair(WHITE_BLUE, COLOR_WHITE, COLOR_BLUE);
+   init_pair(YELLOW_BLUE, COLOR_YELLOW, COLOR_BLUE);
+   init_pair(RED_BLUE, COLOR_RED, COLOR_BLUE);
+   init_pair(WHITE_GREEN, COLOR_WHITE, COLOR_GREEN);
+   init_pair(YELLOW_GREEN, COLOR_YELLOW, COLOR_GREEN);
+   init_pair(RED_GREEN, COLOR_RED, COLOR_GREEN);
 #endif
 }

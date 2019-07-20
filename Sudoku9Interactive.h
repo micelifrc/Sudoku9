@@ -57,12 +57,15 @@ private:
       explicit GridEntry(int entry_ = 0, GridEntryStatus status_ = Empty) : number{entry_}, status{status_} {}
    };
 
-   static constexpr int BLACK_WHITE = 1;
-   static constexpr int BLACK_YELLOW = 2;
-   static constexpr int BLUE_WHITE = 3;
-   static constexpr int BLUE_YELLOW = 4;
-   static constexpr int RED_WHITE = 5;
-   static constexpr int RED_YELLOW = 6;
+   static constexpr int WHITE_BLACK = 1;
+   static constexpr int YELLOW_BLACK = 2;
+   static constexpr int RED_BLACK = 3;
+   static constexpr int WHITE_BLUE = 4;
+   static constexpr int YELLOW_BLUE = 5;
+   static constexpr int RED_BLUE = 6;
+   static constexpr int WHITE_GREEN = 7;
+   static constexpr int YELLOW_GREEN = 8;
+   static constexpr int RED_GREEN = 9;
 
    static int start_pos_x, start_pos_y;
 
