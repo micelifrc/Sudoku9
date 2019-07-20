@@ -1,4 +1,8 @@
+Author: Federico Miceli
+
 The program will allow to play a game of Sudoku on 9x9 grids from terminal.
 You will be allowed to select between 4 different levels (Easy, Intermediate, Hard, Nightmare).
 To compile, please use the Makefile (just type "make" from terminal).
 To play, we suggest to put the terminal to full screen.
+The program is linux-specific.
+The author doesn't have property on the audio-tracks, which appeared in "Pokemon Emerald".

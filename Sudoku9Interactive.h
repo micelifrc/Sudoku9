@@ -4,6 +4,13 @@
 #include <ncurses.h>
 #include "Sudoku9.h"
 
+// will loop on a song
+struct MusicPlayer {
+   explicit MusicPlayer(const std::string &track_name);
+   ~MusicPlayer();
+};
+
+// The actual game on 9x9 grids
 class Sudoku9Interactive {
 public:
    static constexpr int SIZE = Sudoku9::SIZE;
@@ -68,6 +75,9 @@ private:
    static constexpr int RED_GREEN = 9;
 
    static int start_pos_x, start_pos_y;
+
+   const std::string _opening_theme;
+   const std::vector <std::string> _level_themes;
 
    unsigned int _level;
    int _position;

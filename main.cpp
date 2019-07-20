@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Sudoku9Interactive.h"
 
 int main() {

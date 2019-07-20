@@ -2,12 +2,23 @@
 // Created by mich on 19/07/19.
 //
 
+#include <iostream>
 #include "Sudoku9Interactive.h"
+
+MusicPlayer::MusicPlayer(const std::string &track_name) {
+   system(("mpg123 -l 0 " + track_name + " 2>/dev/null &").c_str());
+}
+
+MusicPlayer::~MusicPlayer() {
+   system("pidof mpg123 | xargs kill -15 2>/dev/null &");
+}
 
 int Sudoku9Interactive::start_pos_x = 0, Sudoku9Interactive::start_pos_y = 0;
 
 Sudoku9Interactive::Sudoku9Interactive() :
-      _level{0}, _position{(SIZE * SIZE) / 2}, _solution(), _grid() {
+      _level{0}, _position{(SIZE * SIZE) / 2}, _solution(), _grid(), _opening_theme{"PokeEmeraldThemes/Opening.mp3"},
+      _level_themes{"PokeEmeraldThemes/Littleroot.mp3", "PokeEmeraldThemes/Petalburg.mp3",
+                    "PokeEmeraldThemes/MtPyre.mp3", "PokeEmeraldThemes/RegirockRegiceRegisteel.mp3"} {
    initscr();
    start_colors();
    keypad(stdscr, true);
@@ -27,6 +38,7 @@ Sudoku9Interactive::~Sudoku9Interactive() {
    echo();
    nocbreak();
    endwin();
+   std::cout << "Thank you for playing with us :)" << std::endl;
 }
 
 bool Sudoku9Interactive::play() {
@@ -39,6 +51,7 @@ bool Sudoku9Interactive::play() {
 }
 
 bool Sudoku9Interactive::initial_log() {
+   MusicPlayer player(_opening_theme);
    clear();
    mvprintw(start_pos_y, start_pos_x, "Press 'q' to quit the game");
    mvprintw(start_pos_y + 2, start_pos_x, "Press 'e' to start an easy game");
@@ -82,6 +95,7 @@ bool Sudoku9Interactive::initial_log() {
 }
 
 bool Sudoku9Interactive::play_single_game() {
+   MusicPlayer player(_level_themes[_level]);
    print_all();
    int command;
    while (true) {
