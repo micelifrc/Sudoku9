@@ -18,8 +18,6 @@ public:
 
    const Table &task() const { return _task; }
 
-   static void print_table(const Table &table);
-
    static void initialize_table_to_constant(Table &table, int constant);
 
 private:
