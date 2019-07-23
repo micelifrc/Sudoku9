@@ -16,7 +16,8 @@ MusicPlayer::~MusicPlayer() {
 int Sudoku9Interactive::start_pos_x = 0, Sudoku9Interactive::start_pos_y = 0;
 
 Sudoku9Interactive::Sudoku9Interactive() :
-      _level{0}, _position{(SIZE * SIZE) / 2}, _solution(), _grid(), _opening_theme{"PokeEmeraldThemes/Opening.mp3"},
+      _level{0}, _guess_idx{0}, _guess_mode{false}, _remove_guess_mode_at_next_move{false},
+      _position{(SIZE * SIZE) / 2}, _solution(), _grid(), _opening_theme{"PokeEmeraldThemes/Opening.mp3"},
       _level_themes{"PokeEmeraldThemes/Littleroot.mp3", "PokeEmeraldThemes/Petalburg.mp3",
                     "PokeEmeraldThemes/MtPyre.mp3", "PokeEmeraldThemes/RegirockRegiceRegisteel.mp3"} {
    initscr();
@@ -45,6 +46,8 @@ bool Sudoku9Interactive::play() {
    bool keep_playing = true;
    while (keep_playing) {
       create_sudoku_map();
+      _guess_idx = 0;
+      _guess_mode = false;
       _position = (SIZE * SIZE) / 2;
       keep_playing = play_single_game();
    }
@@ -133,6 +136,16 @@ bool Sudoku9Interactive::play_single_game() {
             try_clear(_position);
             break;
          }
+         case 'g':
+         case 'G': {
+            switch_guess_mode();
+            break;
+         }
+         case 'r':
+         case 'R' : {
+            revert_guess();
+            break;
+         }
          case 'c':
          case 'C': {
             clear_all();
@@ -210,6 +223,9 @@ bool Sudoku9Interactive::try_move(Compass direction) {
          break;
       }
    }
+   if(_remove_guess_mode_at_next_move and _guess_mode) {
+      switch_guess_mode();
+   }
    int old_pos = _position;
    _position = _position + direction;
    print_entry(old_pos);
@@ -229,6 +245,7 @@ void Sudoku9Interactive::display_solution() {
    for (unsigned int y = 0; y != SIZE; ++y) {
       for (unsigned int x = 0; x != SIZE; ++x) {
          GridEntry &grid_entry = _grid[y][x];
+         grid_entry.guess_idx = 0;
          if (grid_entry.status != Fixed) {
             if (grid_entry.number == _solution[y][x]) {
                grid_entry.status = Legal;
@@ -249,6 +266,7 @@ bool Sudoku9Interactive::try_clear(int position) {
    }
    grid_entry.number = 0;
    grid_entry.status = Empty;
+   grid_entry.guess_idx = 0;
    check_legality();
    print_entry(position);
    refresh();
@@ -260,8 +278,13 @@ bool Sudoku9Interactive::try_record(int position, int number) {
    if (grid_entry.status == Fixed) {
       return false;
    }
+   if(_guess_mode and not _remove_guess_mode_at_next_move) {
+      _remove_guess_mode_at_next_move = true;
+      ++_guess_idx;
+   }
    grid_entry.number = number;
    grid_entry.status = Legal;
+   grid_entry.guess_idx = _guess_idx;
    check_legality();
    bool won = true;
    for (unsigned int idx = 0; idx != SIZE * SIZE; ++idx) {
@@ -271,6 +294,9 @@ bool Sudoku9Interactive::try_record(int position, int number) {
       }
    }
    if (won) {
+      if (_guess_mode) {
+         switch_guess_mode();
+      }
       _position = SIZE * SIZE * SIZE;  // out of the grid
       attron(A_BOLD);
       attron(A_BLINK);
@@ -283,18 +309,52 @@ bool Sudoku9Interactive::try_record(int position, int number) {
    return true;
 }
 
+void Sudoku9Interactive::switch_guess_mode() {
+   _guess_mode = not _guess_mode;
+   _remove_guess_mode_at_next_move = false;
+   if (_guess_mode) {
+      mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'g' to switch from guess mode");
+   } else {
+      mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'g' to switch to guess mode  ");
+   }
+   print_entry(_position);
+   refresh();
+}
+
+bool Sudoku9Interactive::revert_guess() {
+   _guess_mode = false;
+   if (_guess_idx == 0) {
+      refresh();
+      return false;
+   }
+   for (unsigned int idx = 0; idx != SIZE * SIZE; ++idx) {
+      if (_grid[idx / SIZE][idx % SIZE].guess_idx == _guess_idx) {
+         try_clear(idx);
+      }
+   }
+   --_guess_idx;
+   refresh();
+   return true;
+}
+
 void Sudoku9Interactive::print_all() const {
    clear();
    for (unsigned int idx = 0; idx != SIZE * SIZE; ++idx) {
       print_entry(idx);
    }
    mvprintw(3 * SIZE + start_pos_y + 1, start_pos_x, "Press '0' to delete a number");
-   mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'q' to quit the game");
-   mvprintw(3 * SIZE + start_pos_y + 3, start_pos_x, "Press 'c' to clear the grid");
-   mvprintw(3 * SIZE + start_pos_y + 4, start_pos_x, "Press 'e' to start a new easy game");
-   mvprintw(3 * SIZE + start_pos_y + 5, start_pos_x, "Press 'i' to start a new intermediate game");
-   mvprintw(3 * SIZE + start_pos_y + 6, start_pos_x, "Press 'h' to start a new hard game");
-   mvprintw(3 * SIZE + start_pos_y + 7, start_pos_x, "Press 'n' to start a new nightmare game");
+   if (_guess_mode) {
+      mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'g' to switch from guess mode");
+   } else {
+      mvprintw(3 * SIZE + start_pos_y + 2, start_pos_x, "Press 'g' to switch to guess mode  ");
+   }
+   mvprintw(3 * SIZE + start_pos_y + 3, start_pos_x, "Press 'r' to revert status to previous guess");
+   mvprintw(3 * SIZE + start_pos_y + 4, start_pos_x, "Press 'q' to quit the game");
+   mvprintw(3 * SIZE + start_pos_y + 5, start_pos_x, "Press 'c' to clear the grid");
+   mvprintw(3 * SIZE + start_pos_y + 6, start_pos_x, "Press 'e' to start a new easy game");
+   mvprintw(3 * SIZE + start_pos_y + 7, start_pos_x, "Press 'i' to start a new intermediate game");
+   mvprintw(3 * SIZE + start_pos_y + 8, start_pos_x, "Press 'h' to start a new hard game");
+   mvprintw(3 * SIZE + start_pos_y + 9, start_pos_x, "Press 'n' to start a new nightmare game");
    refresh();
 }
 
@@ -304,6 +364,8 @@ void Sudoku9Interactive::print_entry(unsigned int idx) const {
    int bg_color = 0, fg_color = 0;
    if (idx != _position) {
       bg_color = (y / 3) % 2 == (x / 3) % 2 ? 1 : 2;
+   } else if (_guess_mode) {
+      bg_color = 3;
    }
    if (grid_entry.status == Legal) {
       fg_color = 1;
@@ -384,5 +446,8 @@ void Sudoku9Interactive::start_colors() {
    init_pair(WHITE_GREEN, COLOR_WHITE, COLOR_GREEN);
    init_pair(YELLOW_GREEN, COLOR_YELLOW, COLOR_GREEN);
    init_pair(RED_GREEN, COLOR_RED, COLOR_GREEN);
+   init_pair(WHITE_MAGENTA, COLOR_WHITE, COLOR_MAGENTA);
+   init_pair(YELLOW_MAGENTA, COLOR_YELLOW, COLOR_MAGENTA);
+   init_pair(RED_MAGENTA, COLOR_RED, COLOR_MAGENTA);
 #endif
 }

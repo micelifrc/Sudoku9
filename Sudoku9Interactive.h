@@ -7,6 +7,7 @@
 // will loop on a song
 struct MusicPlayer {
    explicit MusicPlayer(const std::string &track_name);
+
    ~MusicPlayer();
 };
 
@@ -43,6 +44,10 @@ private:
 
    bool try_record(int position, int number);
 
+   void switch_guess_mode();
+
+   bool revert_guess();  // revert from previous guess
+
    void print_all() const;
 
    void print_entry(unsigned int idx) const;
@@ -60,8 +65,10 @@ private:
    struct GridEntry {
       int number;  // from 0 to 9 (0 means empty)
       GridEntryStatus status;
+      int guess_idx;  // tells how many guesses there have been so far
 
-      explicit GridEntry(int entry_ = 0, GridEntryStatus status_ = Empty) : number{entry_}, status{status_} {}
+      explicit GridEntry(int entry_ = 0, GridEntryStatus status_ = Empty, int guesses_idx_ = 0) :
+            number{entry_}, status{status_}, guess_idx{guesses_idx_} {}
    };
 
    static constexpr int WHITE_BLACK = 1;
@@ -73,6 +80,9 @@ private:
    static constexpr int WHITE_GREEN = 7;
    static constexpr int YELLOW_GREEN = 8;
    static constexpr int RED_GREEN = 9;
+   static constexpr int WHITE_MAGENTA = 10;
+   static constexpr int YELLOW_MAGENTA = 11;
+   static constexpr int RED_MAGENTA = 12;
 
    static int start_pos_x, start_pos_y;
 
@@ -80,6 +90,9 @@ private:
    const std::vector <std::string> _level_themes;
 
    unsigned int _level;
+   int _guess_idx;
+   bool _guess_mode;
+   bool _remove_guess_mode_at_next_move;
    int _position;
    Table _solution;
    std::array<std::array<GridEntry, 9>, 9> _grid;
