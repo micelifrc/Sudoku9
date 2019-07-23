@@ -189,15 +189,15 @@ bool Sudoku9Interactive::play_single_game() {
 
 void Sudoku9Interactive::create_sudoku_map() {
    Sudoku9 sudoku9(_level);
-   _solution = sudoku9.solution();
-   const Table &task = sudoku9.task();
+   _solution = sudoku9.get_solution();
+   const Table &puzzle = sudoku9.get_puzzle();
    for (unsigned int row_idx = 0; row_idx != SIZE; ++row_idx) {
       for (unsigned int col_idx = 0; col_idx != SIZE; ++col_idx) {
-         if (task[row_idx][col_idx] == 0) {
+         if (puzzle[row_idx][col_idx] == 0) {
             _grid[row_idx][col_idx].number = 0;
             _grid[row_idx][col_idx].status = Empty;
          } else {
-            _grid[row_idx][col_idx].number = task[row_idx][col_idx];
+            _grid[row_idx][col_idx].number = puzzle[row_idx][col_idx];
             _grid[row_idx][col_idx].status = Fixed;
          }
       }

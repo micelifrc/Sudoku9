@@ -3,9 +3,8 @@
 
 #include "Rand.h"
 
-// This class will create a sudoku task.
-// We can get the puzzle with task(), and can get the solution with solution()
-// Currently all task are deterministic (i.e. will never require to guess)
+// This class will create a sudoku puzzle.
+// We can get the puzzle with get_puzzle(), and can get the solution with get_solution()
 class Sudoku9 {
 public:
    static constexpr int SIZE = Rand::SIZE;
@@ -14,11 +13,11 @@ public:
 
    explicit Sudoku9(unsigned int level_ = 0);
 
-   const Table &solution() const { return _solution; }
+   const Table &get_solution() const { return _solution; }
 
-   const Table &task() const { return _task; }
+   const Table &get_puzzle() const { return _puzzle; }
 
-   static void print_table(const Table &table);
+   const unsigned int get_level() const { return _level; }
 
    static void initialize_table_to_constant(Table &table, int constant);
 
@@ -29,8 +28,8 @@ private:
    // This can probably be improved
    void filter_out_redundant_points();
 
-   bool
-   try_to_fill_solution_entry_in_solution_table(int idx, const std::array<std::array<int, SIZE>, SIZE * SIZE> &random_orders);
+   bool try_to_fill_solution_entry_in_solution_table(int idx,
+         const std::array<std::array<int, SIZE>, SIZE * SIZE> &random_orders);
 
    // return true if there are no conflicts with table[idx/9][idx%9]
    bool is_legal_solution_point(int idx, const Table &table) const;
@@ -38,7 +37,7 @@ private:
    bool has_legal_extension(int idx, Table &table) const;
 
    Table _solution;
-   Table _task;
+   Table _puzzle;
    unsigned int _level;  // from 0 (easy) to NUM_LEVELS-1 (nightmare)
 };
 

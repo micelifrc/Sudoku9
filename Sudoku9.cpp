@@ -2,30 +2,11 @@
 // Created by mich on 19/07/19.
 //
 
-#include <iostream>
 #include "Sudoku9.h"
 
 Sudoku9::Sudoku9(unsigned int level_) : _level{level_} {
    create_solution();
    filter_out_redundant_points();
-}
-
-void Sudoku9::print_table(const Table &table) {
-   std::string hline = "-------------------\n";
-   std::cout << hline;
-   for (unsigned int row_idx = 0; row_idx != SIZE; ++row_idx) {
-      std::cout << "|";
-      for (unsigned int col_idx = 0; col_idx != SIZE; ++col_idx) {
-         char c = (col_idx == 2 or col_idx == 5) ? '|' : ' ';
-         char number = table[row_idx][col_idx] == 0 ? ' ' : '0' + table[row_idx][col_idx];
-         std::cout << number << c;
-      }
-      std::cout << "\b|\n";
-      if (row_idx == 2 or row_idx == 5) {
-         std::cout << hline;
-      }
-   }
-   std::cout << hline;
 }
 
 void Sudoku9::initialize_table_to_constant(Table &table, int constant) {
@@ -45,11 +26,9 @@ void Sudoku9::create_solution() {
    try_to_fill_solution_entry_in_solution_table(0, order);
 }
 
-// using this version of filter_out_redundant_points we will never need to guess!
-// it could be better to design a more complex version of filter_out_redundant_points to create more complex puzzles
 void Sudoku9::filter_out_redundant_points() {
-   _task = _solution;
-   Table residual_to_test = _task;
+   _puzzle = _solution;
+   Table residual_to_test = _puzzle;
    std::vector<int> shuffled_indices = Rand::create_shuffled_vector(SIZE * SIZE);
    for (int idx: shuffled_indices) {
       unsigned int value_cand;
@@ -57,27 +36,29 @@ void Sudoku9::filter_out_redundant_points() {
          if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
             continue;
          }
-         residual_to_test = _task;
+         residual_to_test = _puzzle;
          residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
          if (is_legal_solution_point(idx, residual_to_test)) {
             break;
          }
       }
       if(value_cand == 0) {
-         _task[idx / SIZE][idx % SIZE] = 0;
+         _puzzle[idx / SIZE][idx % SIZE] = 0;
          continue;
       }
       for (value_cand = SIZE; value_cand != 0; --value_cand) {
          if (value_cand == _solution[idx / SIZE][idx % SIZE]) {
             continue;
          }
-         residual_to_test = _task;
+         residual_to_test = _puzzle;
          residual_to_test[idx / SIZE][idx % SIZE] = value_cand;
          if (is_legal_solution_point(idx, residual_to_test) and has_legal_extension(0, residual_to_test)) {
             break;
          }
       }
-      _task[idx / SIZE][idx % SIZE] = value_cand == 0 and Rand::create_random_number(1, NUM_LEVELS) <= _level ? 0 : _solution[idx / SIZE][idx % SIZE];
+      _puzzle[idx / SIZE][idx % SIZE] =
+            value_cand == 0 and Rand::create_random_number(1, NUM_LEVELS) <= _level ?
+            0 : _solution[idx / SIZE][idx % SIZE];
    }
 }
 
